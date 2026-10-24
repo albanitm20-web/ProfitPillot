@@ -1,0 +1,23 @@
+const assert=require('node:assert/strict');const {client,reconcile}=require('./cloud');
+async function main(){let calls=[],revision=0,doc=null;const user={id:'fictitious-user-a',email:'tester@example.invalid'};
+ const fetcher=async(url,options)=>{calls.push({url,options});let data=null,status=200;const body=options.body?JSON.parse(options.body):null;
+ if(url.includes('/signup'))data={user};else if(url.includes('/token'))data={access_token:'fictitious-token',refresh_token:'fictitious-refresh',expires_in:3600,user};
+ else if(url.endsWith('/user'))data=user;else if(url.includes('/profitpilot_books'))data=doc?[{data:doc,revision}]:[];
+ else if(url.endsWith('/save_profitpilot')){if(body.expected_revision!==revision)status=409;else{doc=body.payload;data=++revision;}}
+ return {ok:status===200,status,text:async()=>JSON.stringify(data)};
+ };
+ const c=client({url:'https://fictional.supabase.co',key:'sb_publishable_fake'},fetcher);
+ await c.signup(user.email,'fictitious');assert.ok(calls[0].url.endsWith('/signup'));assert.equal(c.session,null);
+ await c.login(user.email,'fictitious');assert.equal(c.session.user.id,user.id);assert.equal(await c.read(),null);
+ assert.equal(await c.write({schema:3},0),1);assert.deepEqual((await c.read()).data,{schema:3});
+ await assert.rejects(()=>c.write({schema:3},0),e=>e.status===409);
+ assert.ok(calls.find(x=>x.url.includes('user_id=eq.fictitious-user-a')));assert.ok(calls.filter(x=>x.url.includes('/rest/')).every(x=>x.options.headers.Authorization==='Bearer fictitious-token'));
+ await c.restore({...c.session,expires_at:1});assert.ok(calls.some(x=>x.url.includes('grant_type=refresh_token')));
+ await c.logout();assert.equal(c.session,null);await assert.rejects(()=>c.read(),/Masuk/);
+ const disabled=client({},()=>{throw new Error('Network must not be used');});await assert.rejects(()=>disabled.login('x','y'),/belum dikonfigurasi/);
+ const remote={entries:[]},cache=JSON.stringify({entries:['local edit']});
+ assert.deepEqual(reconcile(remote,cache,{user:'other',revision:1,syncedRaw:'{}'},user.id,1,JSON.parse).state,remote);
+ const pending=reconcile(remote,cache,{user:user.id,revision:1,syncedRaw:'{}'},user.id,1,JSON.parse);assert.equal(pending.conflict,false);assert.equal(pending.state.entries[0],'local edit');
+ assert.equal(reconcile(remote,cache,{user:user.id,revision:1,syncedRaw:'{}'},user.id,2,JSON.parse).conflict,true);
+ console.log('PASS 12 cloud adapter/cache scenarios with simulated responses (not live Supabase Auth).');
+}main().catch(e=>{console.error(e);process.exitCode=1;});

@@ -1,0 +1,7 @@
+{
+  "name": "profitpilot",
+  "version": "3.0.0",
+  "private": true,
+  "scripts": {"build": "node build.cjs", "test": "node check-build.cjs && node check.cjs && node check-v2.cjs && node check-v3.cjs && node check-cloud.cjs", "dev": "node preview.cjs"},
+  "engines": {"node": ">=22"}
+}
