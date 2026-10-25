@@ -7,7 +7,7 @@ const calcScript=calculator.match(/<script>([\s\S]*?)<\/script>/)[1];
 const calcBody=calculator.match(/<body>([\s\S]*?)<\/body>/)[1].replace(/<script>[\s\S]*?<\/script>/,'');
 const calcMarkup='<style>:host{display:block}.calc-page{overflow:visible}button{min-height:44px;min-width:44px}.toast{pointer-events:none}'+calcStyle+'</style><div class="calc-page">'+calcBody+'</div>';
 const calcInit='(function(){const host=document.getElementById("calculator-host");const scope=host.attachShadow({mode:"open"});scope.innerHTML='+JSON.stringify(calcMarkup).replace(/</g,'\\u003c')+';(function(document){'+calcScript+'})(scope);document.documentElement.setAttribute("data-app-ready","true");document.getElementById("startup-status").hidden=true;})();';
-const url=(process.env.SUPABASE_URL||'').replace(/\/$/,''),key=process.env.SUPABASE_PUBLISHABLE_KEY||'';
+const url=(process.env.SUPABASE_URL||'').trim().replace(/\/$/,''),key=(process.env.SUPABASE_PUBLISHABLE_KEY||'').trim();
 if(!!url!==!!key)throw new Error('Set both SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY.');
 if(url&&!/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(url))throw new Error('Use the HTTPS Supabase project URL.');
 if(key&&!/^sb_publishable_[A-Za-z0-9_-]+$/.test(key)){let role;try{role=JSON.parse(Buffer.from(key.split('.')[1],'base64url')).role;}catch{}if(role!=='anon')throw new Error('Only a public publishable or anon key is allowed. Never use a secret/service_role key.');}
@@ -17,3 +17,4 @@ fs.mkdirSync(path.join(root,'dist'),{recursive:true});
 fs.writeFileSync(path.join(root,'dist/index.html'),html);
 for(const name of ['manifest.webmanifest','sw.js','icon-192.png','icon-512.png'])fs.copyFileSync(path.join(root,'public',name),path.join(root,'dist',name));
 console.log('Built ProfitPilot V3: '+Buffer.byteLength(html)+' bytes. Cloud '+(url?'configured':'not configured (local mode)'));
+
