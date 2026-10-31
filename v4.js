@@ -1,0 +1,35 @@
+// V4 presentation only. Ledger, storage, account, and synchronization remain in V3.
+function weeklyCash(rows,book,end){
+ const d=new Date(end+'T12:00:00');d.setDate(d.getDate()-6);
+ const start=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
+ const selected=rows.filter(e=>e.book===book&&e.date>=start&&e.date<=end);
+ return {start,end,count:selected.length,incoming:selected.reduce((n,e)=>n+Math.max(0,e.cash),0),outgoing:selected.reduce((n,e)=>n+Math.max(0,-e.cash),0)};
+}
+if(typeof module!=='undefined'&&module.exports){module.exports={weeklyCash};}else (function(){
+ const icons={summary:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',transactions:'<path d="M4 7h16m-4-4 4 4-4 4M20 17H4m4-4-4 4 4 4"/>',add:'<path d="M12 4v16M4 12h16"/>',report:'<path d="M4 3v18h17M8 16v-5m5 5V6m5 10v-7"/>',more:'<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>'};
+ const svg=k=>'<svg viewBox="0 0 24 24" aria-hidden="true">'+icons[k]+'</svg>';
+ const nav=document.createElement('nav');nav.className='mobile-nav';nav.setAttribute('aria-label','Navigasi utama');
+ nav.innerHTML=[['summary','Ringkasan'],['transactions','Riwayat'],['add','Tambah'],['report','Laporan'],['more','Lainnya']].map(([key,label])=>'<button type="button" data-mobile="'+key+'" '+(key==='add'?'class="nav-add" aria-label="Tambah transaksi"':'')+'>'+svg(key)+'<span>'+label+'</span></button>').join('');document.querySelector('main').append(nav);
+ const more=document.createElement('dialog');more.id='more-dialog';more.setAttribute('aria-labelledby','more-title');more.innerHTML='<div class="dialog-head"><h2 id="more-title">Menu lainnya</h2><button class="close" data-close="more-dialog" aria-label="Tutup menu">×</button></div><div class="more-grid"><button class="button" data-more-tab="plans">Anggaran & target</button><button class="button" data-more-tab="stock">Stok</button><button class="button" data-more-tab="debts">Utang & piutang</button><button class="button" data-more-tab="calculator">Kalkulator laba</button><button class="button" data-more-action="backup">Cadangan data</button><button class="button" data-more-action="account">Akun</button></div>';document.body.append(more);
+ const week=document.createElement('section');week.className='card';week.id='weekly-card';document.querySelector('#summary-panel .two-col').prepend(week);
+ const starter=document.querySelector('#start-title').closest('.card');starter.id='getting-started';
+ function navigation(){nav.querySelectorAll('[data-mobile]').forEach(b=>{const active=b.dataset.mobile===tab||(b.dataset.mobile==='more'&&!['summary','transactions','report'].includes(tab));if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});more.querySelector('[data-more-tab="plans"]').hidden=mode!=='personal';more.querySelector('[data-more-tab="stock"]').hidden=mode!=='business';}
+ const oldSetTab=setTab;setTab=value=>{oldSetTab(value);navigation();};
+ function overview(){navigation();document.querySelector('.welcome h1').textContent=mode==='business'?'Keuangan usaha':'Keuangan pribadi';$('welcome-note').textContent=mode==='business'?'Pantau penjualan, biaya, dan hasil usahamu.':'Lihat pemasukan, pengeluaran, dan sisa uangmu.';
+ const all=PP.ledger(state).rows.filter(e=>e.book===mode);const {start,end,count,incoming,outgoing}=weeklyCash(all,mode,today()),scale=Math.max(incoming,outgoing,1);
+ starter.hidden=all.length>0;week.hidden=all.length===0;
+ week.innerHTML='<div class="overview-heading"><span class="eyebrow">7 HARI TERAKHIR</span><h2>Pergerakan uang</h2><p class="muted">'+displayDate(start)+' – '+displayDate(end)+'</p></div><div class="weekly-values"><div><span>Kas masuk</span><strong>'+money(incoming)+'</strong></div><div><span>Kas keluar</span><strong>'+money(outgoing)+'</strong></div></div><div class="weekly-bars" aria-hidden="true"><div>Kas masuk<div class="weekly-track"><i style="width:'+incoming/scale*100+'%"></i></div></div><div>Kas keluar<div class="weekly-track"><i style="width:'+outgoing/scale*100+'%"></i></div></div></div><p class="weekly-note">'+(count?count+' catatan dalam tujuh hari terakhir.':'Belum ada catatan dalam tujuh hari terakhir.')+' Kas neto per transaksi, termasuk saldo awal dan pinjaman. Ini bukan laba dan tidak mengikuti filter bulan.</p>';
+ }
+ new MutationObserver(overview).observe($('summary-stats'),{childList:true});overview();
+ nav.addEventListener('click',e=>{const key=e.target.closest('button')?.dataset.mobile;if(!key)return;if(key==='add')openEntry();else if(key==='more')more.showModal();else{setTab(key);document.querySelector('main').scrollIntoView({block:'start'});}});
+ more.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.moreTab){more.close();setTab(b.dataset.moreTab);document.querySelector('main').scrollIntoView({block:'start'});}if(b.dataset.moreAction){more.close();$(b.dataset.moreAction==='account'?'account-open':'backup-open').click();}});
+ const quick=document.createElement('div');quick.className='quick-entry';quick.setAttribute('aria-label','Jenis transaksi cepat');quick.innerHTML='<button type="button" data-quick="income">Uang masuk</button><button type="button" data-quick="expense">Pengeluaran</button>';$('entry-form').insertBefore(quick,$('entry-form').querySelector('.form-grid'));
+ function quickState(){quick.hidden=!!editingEntry;quick.querySelectorAll('button').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.quick===$('entry-type').value));if(b.dataset.quick==='income')b.textContent=mode==='business'?'Penjualan':'Uang masuk';});}
+ const oldOpenEntry=openEntry;openEntry=(...args)=>{oldOpenEntry(...args);quickState();};
+ quick.addEventListener('click',e=>{const type=e.target.closest('button')?.dataset.quick;if(!type)return;$('entry-type').value=type;entryFields();quickState();});$('entry-type').addEventListener('change',quickState);
+ for(const dialog of document.querySelectorAll('dialog')){const heading=dialog.querySelector('h2');if(heading){if(!heading.id)heading.id=dialog.id+'-heading';dialog.setAttribute('aria-labelledby',heading.id);}}
+ const authProgress=document.createElement('p');authProgress.id='auth-progress';authProgress.hidden=true;authProgress.setAttribute('role','status');authProgress.textContent='Sedang menghubungkan akun…';$('auth-form').append(authProgress);
+ new MutationObserver(()=>{const busy=[...$('auth-form').querySelectorAll('button')].some(b=>b.disabled);authProgress.hidden=!busy;$('auth-form').setAttribute('aria-busy',String(busy));}).observe($('auth-form'),{subtree:true,attributes:true,attributeFilter:['disabled']});
+ // Comparison mode is explicitly requested via URL; never stored in user books.
+ if(new URLSearchParams(location.search).get('layout')==='rail')document.body.dataset.layout='rail';
+})();
