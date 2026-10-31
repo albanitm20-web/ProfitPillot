@@ -1,10 +1,10 @@
 {
   "name": "profitpilot",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "private": true,
   "scripts": {
     "build": "node build.cjs",
-    "test": "node check-build.cjs && node check.cjs && node check-v2.cjs && node check-v3.cjs && node check-cloud.cjs && node check-v4.cjs",
+    "test": "node check-build.cjs && node check.cjs && node check-v2.cjs && node check-v3.cjs && node check-cloud.cjs && node check-v4.cjs && node check-v41.cjs",
     "dev": "node preview.cjs"
   },
   "engines": {

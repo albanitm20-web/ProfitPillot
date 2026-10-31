@@ -15,6 +15,8 @@ function client(config,fetcher=fetch){
  function keep(value){session=value?{access_token:value.access_token,refresh_token:value.refresh_token,expires_at:value.expires_at||Math.floor(Date.now()/1000)+(value.expires_in||3600),user:value.user}:null;return session;}
  async function valid(){if(!session)throw new Error('Masuk terlebih dahulu.');if(session.expires_at<Date.now()/1000+60){keep(await request('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:{refresh_token:session.refresh_token}}));}return session;}
  return {enabled,get session(){return session;},
+  async googleAvailable(){const settings=await request('/auth/v1/settings');return settings?.external?.google===true;},
+  async exchangeGoogle(code,verifier){return keep(await request('/auth/v1/token?grant_type=pkce',{method:'POST',body:{auth_code:code,code_verifier:verifier}}));},
   async login(email,password){return keep(await request('/auth/v1/token?grant_type=password',{method:'POST',body:{email,password}}));},
   async signup(email,password){return request('/auth/v1/signup',{method:'POST',body:{email,password}});},
   async restore(value){keep(value);await valid();const user=await request('/auth/v1/user',{auth:true});session.user=user;return session;},

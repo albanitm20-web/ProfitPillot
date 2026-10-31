@@ -57,7 +57,7 @@ async function enterAccount(){cloudLoading=true;document.querySelector('main').i
  cloudMessage(cloudConflict?'Catatan sesi belum terkirim dan server telah berubah. Unduh cadangan, lalu ambil data server.':'Catatan akun dibuka. Catatan lokal tetap terpisah.');
  }finally{cloudLoading=false;document.querySelector('main').inert=false;}}
 $('account-open').addEventListener('click',()=>{accountUI();$('account-error').textContent='';$('account-dialog').showModal();});
-$('auth-form').addEventListener('submit',async e=>{e.preventDefault();const buttons=[...$('auth-form').querySelectorAll('button')];buttons.forEach(b=>b.disabled=true);$('account-error').textContent='';try{
+$('auth-form').addEventListener('submit',async e=>{e.preventDefault();if(cloudLoading)return;const buttons=[...$('auth-form').querySelectorAll('button')];buttons.forEach(b=>b.disabled=true);$('account-error').textContent='';try{
  const email=$('auth-email').value.trim(),password=$('auth-password').value;if(password.length<8)throw new Error('Gunakan password minimal 8 karakter.');
  if(e.submitter?.value==='signup'){await cloud.signup(email,password);$('account-error').textContent='Permintaan pendaftaran diterima. Periksa email konfirmasi, lalu masuk. Jika email sudah terdaftar, gunakan akun yang ada.';}else{await cloud.login(email,password);await enterAccount();$('account-dialog').close();}
  $('auth-password').value='';
@@ -73,4 +73,19 @@ let installPrompt;window.addEventListener('beforeinstallprompt',e=>{e.preventDef
 $('install-app').addEventListener('click',async()=>{if(!installPrompt)return;await installPrompt.prompt();installPrompt=null;$('install-app').hidden=true;});
 if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('./sw.js').catch(()=>{});
 render();setTab('summary');accountUI();
-(async()=>{if(!cloud.enabled)return;let saved;try{saved=sessionStorage.getItem(SESSION);if(saved){document.querySelector('main').inert=true;cloudMessage('Memeriksa sesi akun…');await cloud.restore(JSON.parse(saved));await enterAccount();if(!cloudConflict)await syncCloud();}}catch{cloudUser=null;loadLocal();accountUI();cloudMessage('Sesi akun belum bisa dibuka. Masuk kembali untuk memulihkan cache sesi. Catatan lokal ditampilkan.');}finally{document.querySelector('main').inert=false;}})();
+(async()=>{if(!cloud.enabled)return;cloudLoading=true;let saved;const params=new URLSearchParams(location.search);const callback=params.get('oauth')==='google';try{
+ if(callback){
+  const code=params.get('code'),failed=params.has('error')||params.has('error_description');
+  history.replaceState(null,'',location.pathname+location.hash);
+  document.querySelector('main').inert=true;cloudMessage('Memeriksa akun Google…');
+  const verifier=PPOAuth.consume(sessionStorage,location.origin);
+  if(failed||!code)throw Error('Masuk dengan Google dibatalkan atau tidak berhasil. Coba lagi.');
+  await cloud.exchangeGoogle(code,verifier);await enterAccount();cloudMessage('Berhasil masuk. Catatan akun sudah dibuka.');
+ }else{saved=sessionStorage.getItem(SESSION);if(saved){document.querySelector('main').inert=true;cloudMessage('Memeriksa sesi akun…');await cloud.restore(JSON.parse(saved));await enterAccount();if(!cloudConflict)await syncCloud();}}
+ }catch(e){cloudUser=null;loadLocal();accountUI();cloudMessage(callback?e.message:'Sesi akun belum bisa dibuka. Masuk kembali untuk memulihkan cache sesi. Catatan lokal ditampilkan.');if(callback){$('account-error').textContent=e.message;$('account-dialog').showModal();}}finally{cloudLoading=false;document.querySelector('main').inert=false;}})();
+$('google-login').addEventListener('click',async()=>{
+ const buttons=[...$('auth-form').querySelectorAll('button')];buttons.forEach(b=>b.disabled=true);$('account-error').textContent='';
+ try{if(cloudUser||cloudLoading)throw Error('Tunggu proses akun selesai.');if(!await cloud.googleAvailable())throw Error('Login Google belum diaktifkan. Kamu tetap bisa masuk dengan email dan password.');
+ const url=await PPOAuth.prepare(PPCloud.config,location.origin,sessionStorage);location.assign(url);
+ }catch(e){err('account-error',e);buttons.forEach(b=>b.disabled=false);}
+});
