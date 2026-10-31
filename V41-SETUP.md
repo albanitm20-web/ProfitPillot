@@ -27,3 +27,5 @@ Vercel Preview authentication protection stays unchanged. If Google returns to P
 - No paid services activated. Figma/Canva design connectors were unavailable in this session; implementation and visual checks use the running app.
 
 References: https://supabase.com/docs/guides/auth/social-sign-in/auth-google ; https://supabase.com/docs/guides/auth/sessions/pkce-flow ; https://supabase.com/docs/guides/auth/auth-identity-linking .
+
+Responsive browser checks: 390px and 360px viewport, mobile navigation, settings, calculator, invalid negative input. No horizontal overflow found on these views. Fixed inherited white dialog header/action surfaces in dark mode. Physical iOS/Android devices were not tested.
