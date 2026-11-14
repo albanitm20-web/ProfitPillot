@@ -12,9 +12,9 @@ if(!!url!==!!key)throw new Error('Set both SUPABASE_URL and SUPABASE_PUBLISHABLE
 if(url&&!/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(url))throw new Error('Use the HTTPS Supabase project URL.');
 if(key&&!/^sb_publishable_[A-Za-z0-9_-]+$/.test(key)){let role;try{role=JSON.parse(Buffer.from(key.split('.')[1],'base64url')).role;}catch{}if(role!=='anon')throw new Error('Only a public publishable or anon key is allowed. Never use a secret/service_role key.');}
 const cloud=read('cloud.js').replace('/*PUBLIC_CONFIG*/{}',JSON.stringify({url,key}).replace(/</g,'\\u003c'));
-const html=read('app.html').replace('/*CLOUD_ORIGIN*/',url).replace('/*APP_STYLE*/',()=>read('app.css')+'\n'+read('v4.css')+'\n'+read('v41.css')).replace('/*APPEARANCE_JS*/',()=>read('appearance.js')).replace('/*OAUTH_JS*/',()=>read('oauth.js')).replace('/*CORE_JS*/',()=>read('core.js')).replace('/*CLOUD_JS*/',()=>cloud).replace('/*APP_JS*/',()=>read('app.js')).replace('/*V3_JS*/',()=>read('v3.js')).replace('/*CALCULATOR_JS*/',()=>calcInit).replace('/*V4_JS*/',()=>read('v4.js')+'\n'+read('v41.js'));
+const html=read('app.html').replace('/*CLOUD_ORIGIN*/',url).replace('/*APP_STYLE*/',()=>read('app.css')+'\n'+read('v4.css')+'\n'+read('v41.css')+'\n'+read('v5.css')).replace('/*APPEARANCE_JS*/',()=>read('appearance.js')).replace('/*OAUTH_JS*/',()=>read('oauth.js')+'\n'+read('recovery.js')).replace('/*CORE_JS*/',()=>read('core.js')).replace('/*CLOUD_JS*/',()=>cloud).replace('/*APP_JS*/',()=>read('app.js')).replace('/*V3_JS*/',()=>read('v3.js')).replace('/*CALCULATOR_JS*/',()=>calcInit).replace('/*V4_JS*/',()=>read('v4.js')+'\n'+read('v5-model.js')+'\n'+read('v5.js')+'\n'+read('v5-auth.js'));
 fs.mkdirSync(path.join(root,'dist'),{recursive:true});
 fs.writeFileSync(path.join(root,'dist/index.html'),html);
 for(const name of ['manifest.webmanifest','sw.js','icon-192.png','icon-512.png'])fs.copyFileSync(path.join(root,'public',name),path.join(root,'dist',name));
-console.log('Built ProfitPilot V4.1: '+Buffer.byteLength(html)+' bytes. Cloud '+(url?'configured':'not configured (local mode)'));
+console.log('Built ProfitPilot V5: '+Buffer.byteLength(html)+' bytes. Cloud '+(url?'configured':'not configured (local mode)'));
 

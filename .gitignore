@@ -6,3 +6,5 @@ node_modules/
 dist/
 *.log
 *.backup.json
+test-results/
+playwright-report/

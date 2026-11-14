@@ -1,8 +1,8 @@
-# ProfitPilot V3
+# ProfitPilot V5
 
-Kelanjutan langsung ProfitPilot V2. Antarmuka HTML/CSS/JavaScript dan kalkulator V1 tetap dipakai. Tidak ada data contoh yang dimasukkan otomatis.
+Kelanjutan V4.1 dengan dashboard V5, lima palet, mode terang/gelap/sistem, dan formulir yang menyesuaikan jenis usaha. Mesin keuangan dan kalkulator V1 tetap dipakai. Tidak ada data contoh yang dimasukkan otomatis.
 
-Status: MVP lokal telah diuji. Integrasi Supabase disiapkan tetapi belum dihubungkan ke proyek nyata. Belum ada repository GitHub atau deployment Vercel publik.
+V5 dikembangkan pada branch `feature/profitpilot-v5` untuk Preview. Production tetap terpisah. Audit, bukti pengujian, dan batas pengujian akun tercatat di [V5-DESIGN-QA.md](V5-DESIGN-QA.md).
 
 ## Menjalankan
 
@@ -21,10 +21,15 @@ npm test
 
 Pengujian memakai data fiktif di memori dan tidak membaca catatan pengguna. `check-build.cjs` membangun konfigurasi fiktif, memeriksanya, lalu mengembalikan build ke mode lokal. Jalankan pengujian sebelum build produksi, bukan sesudahnya.
 
+Untuk pengujian browser, jalankan `npm ci`, `npx playwright install chrome`, lalu `npm run test:ui:all`. Pengujian memakai profil browser terpisah dan data fiktif. Screenshot dan laporan JSON ditulis ke `test-results/` (atau `PP_QA_OUTPUT`).
+
 ## Struktur
 
 | File | Fungsi |
 |---|---|
+| v5.css, v5.js, v5-model.js | Token, dashboard, navigasi, dan selector presentasi V5 |
+| recovery.js, v5-auth.js | Pemulihan password PKCE, dialog permintaan dan callback |
+| tests/ | Skenario Playwright dan axe, data fiktif |
 | app.html, app.css, app.js | Tampilan dan pencatatan V2 yang dikembangkan |
 | core.js | Validasi, migrasi, HPP rata-rata, kas, utang, laba rugi |
 | v3.js | Anggaran, target, dialog konfirmasi, retur, sesi dan sinkronisasi |

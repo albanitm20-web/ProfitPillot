@@ -73,7 +73,7 @@ let installPrompt;window.addEventListener('beforeinstallprompt',e=>{e.preventDef
 $('install-app').addEventListener('click',async()=>{if(!installPrompt)return;await installPrompt.prompt();installPrompt=null;$('install-app').hidden=true;});
 if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('./sw.js').catch(()=>{});
 render();setTab('summary');accountUI();
-(async()=>{if(!cloud.enabled)return;cloudLoading=true;let saved;const params=new URLSearchParams(location.search);const callback=params.get('oauth')==='google';try{
+(async()=>{if(!cloud.enabled||new URLSearchParams(location.search).get('recovery')==='password')return;cloudLoading=true;let saved;const params=new URLSearchParams(location.search);const callback=params.get('oauth')==='google';try{
  if(callback){
   const code=params.get('code'),failed=params.has('error')||params.has('error_description');
   history.replaceState(null,'',location.pathname+location.hash);

@@ -2,8 +2,8 @@ const assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('nod
 const appearance=require('./appearance.js'),oauth=require('./oauth.js'),{client}=require('./cloud.js');
 const storage=()=>{const map=new Map();return {setItem:(k,v)=>map.set(k,v),getItem:k=>map.get(k)??null,removeItem:k=>map.delete(k)};};
 (async()=>{
-assert.deepEqual(appearance.normalize({palette:'bad',mode:'bad'}),{palette:'emerald',mode:'system'});
-for(const palette of appearance.palettes)for(const mode of appearance.modes)assert.deepEqual(appearance.normalize({palette,mode}),{palette,mode});
+assert.deepEqual(appearance.normalize({palette:'bad',mode:'bad'}),{palette:'emerald',mode:'system',compact:false,reducedMotion:false,layout:'editorial'});
+for(const palette of appearance.palettes)for(const mode of appearance.modes)assert.deepEqual(appearance.normalize({palette,mode}),{palette,mode,compact:false,reducedMotion:false,layout:'editorial'});
 let listener;const doc={dataset:{},style:{}},local=storage();const media={matches:false,addEventListener:(name,fn)=>listener=fn};
 const context={document:{documentElement:doc},localStorage:local,matchMedia:()=>media,window:{dispatchEvent(){}},Event};vm.runInNewContext(fs.readFileSync('appearance.js','utf8'),context);
 assert.equal(doc.dataset.theme,'light');media.matches=true;listener();assert.equal(doc.dataset.theme,'dark');context.PPAppearance.save({palette:'rose',mode:'light'});listener();assert.equal(doc.dataset.theme,'light');assert.equal(JSON.parse(local.getItem(appearance.key)).palette,'rose');

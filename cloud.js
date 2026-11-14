@@ -17,6 +17,8 @@ function client(config,fetcher=fetch){
  return {enabled,get session(){return session;},
   async googleAvailable(){const settings=await request('/auth/v1/settings');return settings?.external?.google===true;},
   async exchangeGoogle(code,verifier){return keep(await request('/auth/v1/token?grant_type=pkce',{method:'POST',body:{auth_code:code,code_verifier:verifier}}));},
+  async requestRecovery(email,redirect,challenge){return request('/auth/v1/recover?redirect_to='+encodeURIComponent(redirect),{method:'POST',body:{email,code_challenge:challenge,code_challenge_method:'s256'}});},
+  async updatePassword(password){await valid();return request('/auth/v1/user',{method:'PUT',auth:true,body:{password}});},
   async login(email,password){return keep(await request('/auth/v1/token?grant_type=password',{method:'POST',body:{email,password}}));},
   async signup(email,password){return request('/auth/v1/signup',{method:'POST',body:{email,password}});},
   async restore(value){keep(value);await valid();const user=await request('/auth/v1/user',{auth:true});session.user=user;return session;},
