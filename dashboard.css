@@ -7,6 +7,7 @@
 [data-dashboard=classic] .top #settings-open{display:inline-flex}
 [data-dashboard=classic] .workspace-bar{padding:18px 22px;border:1px solid var(--line);border-radius:16px;background:var(--surface);gap:16px;flex-wrap:wrap}
 [data-dashboard=classic] .workspace-bar>div:first-child{display:block}
+[data-dashboard=classic] .workspace-bar:has(#profile-control[hidden]){display:flex}
 [data-dashboard=classic] .stats{grid-template-columns:repeat(4,minmax(0,1fr))}
 [data-dashboard=classic] .stat:first-child{background:var(--surface)!important;color:var(--ink)!important;border-color:var(--line)!important}
 [data-dashboard=classic] .stat:first-child .stat-label,[data-dashboard=classic] .stat:first-child small{color:var(--muted)!important}
@@ -22,7 +23,7 @@
 .dashboard-choice{display:flex;flex-direction:column;gap:10px;text-align:left;color:var(--ink);background:var(--surface);min-width:0}
 .dashboard-choice small{color:var(--muted);font-weight:400;line-height:1.5}
 .dashboard-choice[aria-pressed=true]{border:2px solid var(--accent);background:var(--tint)}
-.dashboard-choice-action{font-size:12px;color:var(--accent);margin-top:auto}
+.dashboard-choice-action{font-size:12px;color:var(--ink);margin-top:auto}
 .dashboard-mini{width:100%;height:106px;border:1px solid var(--line);border-radius:6px;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:12px 24px 1fr;gap:6px;background:var(--background)}
 .dashboard-mini i{grid-column:1/-1;background:var(--tint);border:1px solid var(--accent)}
 .dashboard-mini b,.dashboard-mini em{border:1px solid var(--line);background:var(--surface);border-radius:3px}
