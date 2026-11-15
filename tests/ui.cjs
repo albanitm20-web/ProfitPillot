@@ -5,7 +5,7 @@ const evidence={started:new Date().toISOString(),checks:[],screenshots:[],access
 const check=(name,fn)=>Promise.resolve().then(fn).then(()=>{evidence.checks.push({name,status:'passed'});console.log('PASS '+name);});
 let browser,page;
 (async()=>{browser=await chromium.launch({channel:process.env.PP_BROWSER_CHANNEL||'chrome',headless:true});const context=await browser.newContext({viewport:{width:1440,height:900}});page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
-async function seed(theme={palette:'emerald',mode:'light'}){await context.addInitScript(({data,theme})=>{if(!localStorage.getItem('qa-seeded')){localStorage.setItem('profitpilot.v3',JSON.stringify(data));localStorage.setItem('profitpilot.appearance.v1',JSON.stringify(theme));localStorage.setItem('qa-seeded','true');}},{data,theme});}
+async function seed(theme={palette:'emerald',mode:'light'}){await context.addInitScript(({data,theme})=>{if(!localStorage.getItem('qa-seeded')){localStorage.setItem('profitpilot.v3',JSON.stringify(data));localStorage.setItem('profitpilot.dashboard.v1',JSON.stringify({version:1,dashboardStyle:'modern'}));localStorage.setItem('profitpilot.appearance.v1',JSON.stringify(theme));localStorage.setItem('qa-seeded','true');}},{data,theme});}
 async function ready(){await page.goto(base);await page.waitForSelector('[data-app-ready=true]');await page.waitForTimeout(60);}
 async function shot(name){await page.screenshot({animations:'disabled',path:path.join(out,name+'.png'),fullPage:true});evidence.screenshots.push(name+'.png');}
 async function noOverflow(){assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Horizontal page overflow');}
