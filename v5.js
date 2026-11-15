@@ -37,6 +37,7 @@
  function card(title,body,go,label,cls=''){return '<section class="card '+cls+'"><div class="section-head"><h2>'+title+'</h2>'+(go?'<button class="quiet" data-go="'+go+'">'+label+' →</button>':'')+'</div>'+body+'</section>';}
  function progress(value,max){return Math.min(100,Math.max(0,max?value/max*100:0));}
  function paintDashboard(){
+  if(document.documentElement.dataset.dashboard==='classic')return;
   const b=mode==='business',m=PPV5.overview(state,mode,month(),PP),r=m.report;
   document.querySelector('.welcome h1').textContent=b?'Ringkasan usaha':'Ringkasan keuangan';$('welcome-note').textContent=b?profiles[state.profile].name+' · Penjualan, biaya, dan hasil usahamu.':'Lihat catatan uangmu tanpa bercampur dengan usaha.';
   $('summary-stats').innerHTML=stat(b?'Laba tercatat':'Saldo tercatat',b?r.profit:r.closingCash,b?'Penjualan dikurangi HPP dan biaya':month()?'Sampai akhir '+periodName().toLowerCase():'Dari seluruh catatan')+stat(b?(state.profile==='service'?'Pendapatan jasa':'Penjualan bersih'):'Uang masuk',r.income,periodName())+stat(b?'HPP & biaya':'Uang keluar',r.cogs+r.expense,b?'Diakui pada tanggal transaksi':'Termasuk pengeluaran tempo')+stat(b?'Saldo kas tercatat':'Selisih periode',b?r.closingCash:r.profit,b?'Berbeda dari laba tercatat':'Pemasukan dikurangi pengeluaran',true);
@@ -63,8 +64,8 @@
  const previousRender=render;render=(...args)=>{previousRender(...args);paintDashboard();};
  paintDashboard();
  // V4's observer updates headings for compatibility; apply the V5 copy after it.
- new MutationObserver(()=>{document.querySelector('.welcome h1').textContent=mode==='business'?'Ringkasan usaha':'Ringkasan keuangan';$('welcome-note').textContent=mode==='business'?profiles[state.profile].name+' · Penjualan, biaya, dan hasil usahamu.':'Lihat catatan uangmu tanpa bercampur dengan usaha.';}).observe($('summary-stats'),{childList:true});
- queueMicrotask(()=>{document.querySelector('.welcome h1').textContent=mode==='business'?'Ringkasan usaha':'Ringkasan keuangan';});
+ new MutationObserver(()=>{if(document.documentElement.dataset.dashboard==='classic')return;document.querySelector('.welcome h1').textContent=mode==='business'?'Ringkasan usaha':'Ringkasan keuangan';$('welcome-note').textContent=mode==='business'?profiles[state.profile].name+' · Penjualan, biaya, dan hasil usahamu.':'Lihat catatan uangmu tanpa bercampur dengan usaha.';}).observe($('summary-stats'),{childList:true});
+ queueMicrotask(()=>{if(document.documentElement.dataset.dashboard==='classic')return;document.querySelector('.welcome h1').textContent=mode==='business'?'Ringkasan usaha':'Ringkasan keuangan';});
 
  // Restore only whitelisted navigation state. Never put financial values in URLs.
  const allowedTabs=['summary','transactions','stock','debts','report','plans','calculator'];let navigating=false;

@@ -1,0 +1,36 @@
+/* Classic restores the original horizontal workspace and summary, using shared tokens. */
+[data-dashboard=classic] main{max-width:1320px;padding:32px;margin:auto}
+[data-dashboard=classic] .tabs{position:static;inset:auto;width:auto;display:flex;flex-direction:row;flex-wrap:wrap;gap:4px;margin:24px 0 0;padding:5px;border:1px solid var(--line);border-radius:12px;overflow:visible}
+[data-dashboard=classic] .tabs button{padding:11px 15px;font-size:13px;justify-content:flex-start}
+[data-dashboard=classic] .tabs .nav-label{display:inline}
+[data-dashboard=classic] .tabs:before,[data-dashboard=classic] .sidebar-divider,[data-dashboard=classic] .sidebar-foot,[data-dashboard=classic] .sidebar-collapse,[data-dashboard=classic] #v5-dashboard,[data-dashboard=classic] #v5-onboarding{display:none!important}
+[data-dashboard=classic] .top #settings-open{display:inline-flex}
+[data-dashboard=classic] .workspace-bar{padding:18px 22px;border:1px solid var(--line);border-radius:16px;background:var(--surface);gap:16px;flex-wrap:wrap}
+[data-dashboard=classic] .workspace-bar>div:first-child{display:block}
+[data-dashboard=classic] .stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+[data-dashboard=classic] .stat:first-child{background:var(--surface)!important;color:var(--ink)!important;border-color:var(--line)!important}
+[data-dashboard=classic] .stat:first-child .stat-label,[data-dashboard=classic] .stat:first-child small{color:var(--muted)!important}
+[data-dashboard=classic] .stat.highlight{background:var(--tint)!important;border-color:var(--accent)!important}
+[data-dashboard=classic] .stat{min-height:150px}
+[data-dashboard=classic] #summary-panel>.two-col{display:grid;grid-template-columns:1fr 1fr;align-items:start}
+[data-dashboard=classic] #weekly-card:not([hidden]),[data-dashboard=classic] #getting-started:not([hidden]){display:block!important}
+[data-dashboard=classic] .weekly-track{background:var(--surface-alt)}
+[data-dashboard=classic] .weekly-bars>div:last-child i{background:var(--chart-out)}
+#dashboard-switch{margin-left:auto;white-space:nowrap}
+.dashboard-settings{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:24px}
+.dashboard-choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dashboard-choice{display:flex;flex-direction:column;gap:10px;text-align:left;color:var(--ink);background:var(--surface);min-width:0}
+.dashboard-choice small{color:var(--muted);font-weight:400;line-height:1.5}
+.dashboard-choice[aria-pressed=true]{border:2px solid var(--accent);background:var(--tint)}
+.dashboard-choice-action{font-size:12px;color:var(--accent);margin-top:auto}
+.dashboard-mini{width:100%;height:106px;border:1px solid var(--line);border-radius:6px;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:12px 24px 1fr;gap:6px;background:var(--background)}
+.dashboard-mini i{grid-column:1/-1;background:var(--tint);border:1px solid var(--accent)}
+.dashboard-mini b,.dashboard-mini em{border:1px solid var(--line);background:var(--surface);border-radius:3px}
+.dashboard-mini em:last-child{grid-column:2/-1}
+.dashboard-mini.modern{grid-template-columns:18px repeat(3,1fr);grid-template-rows:34px 1fr}
+.dashboard-mini.modern i{grid-column:1;grid-row:1/3}
+.dashboard-mini.modern b:nth-child(2){background:var(--hero)}
+.dashboard-mini.modern em{grid-column:2/4;background:repeating-linear-gradient(to right,var(--tint) 0 8px,var(--surface) 8px 14px)}
+.dashboard-mini.modern em:last-child{grid-column:4;background:var(--surface)}
+@media(max-width:950px){[data-dashboard=classic] .stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:767px){[data-dashboard=classic] main{padding:20px 16px 100px}[data-dashboard=classic] .tabs{display:none}[data-dashboard=classic] .stats .stat:first-child,[data-dashboard=classic] .stats .stat:last-child{grid-column:auto!important}[data-dashboard=classic] .stats .stat .stat-value{font-size:clamp(16px,11cqw,26px)}[data-dashboard=classic] #summary-panel>.two-col{grid-template-columns:1fr}[data-dashboard=classic] .workspace-bar{padding:16px}[data-dashboard=classic] .workspace-bar #new-entry{width:100%}[data-dashboard=classic] .top #settings-open{display:none}.dashboard-choices{grid-template-columns:1fr 1fr}.dashboard-choice{padding:12px}.dashboard-mini{height:88px;padding:7px;gap:4px}}
