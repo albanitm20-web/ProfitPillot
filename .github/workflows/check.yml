@@ -9,6 +9,14 @@ jobs:
         with:
           node-version: '24'
       - run: node build.cjs
+      - run: npm ci
       - run: npm test
       - run: npm install --no-save --ignore-scripts @electric-sql/pglite@0.5.11
       - run: node check-db.cjs
+      - run: npx playwright install --with-deps chrome
+      - run: npm run test:ui:all
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: profitpilot-v5-browser-evidence
+          path: test-results/
