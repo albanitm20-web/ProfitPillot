@@ -1,0 +1,22 @@
+/* Bound native date/month controls, including WebKit's intrinsic minimum width. */
+.filters>label,.form-grid>label{min-width:0;max-width:100%}
+.filters input,.filters select,input[type=date],input[type=month]{box-sizing:border-box;min-width:0;min-inline-size:0;max-width:100%;width:100%}
+input[type=date],input[type=month]{display:block;min-height:46px}
+input::-webkit-date-and-time-value{text-align:left;min-height:1.4em}
+input::-webkit-datetime-edit{min-width:0;padding:0}
+.period-bar #period{width:158px}
+.category-input{position:relative;display:block;min-width:0;width:100%}
+.category-input #entry-category{width:100%;padding-right:56px}
+.category-input #category-picker{position:absolute;right:1px;top:1px;bottom:1px;width:46px;min-height:44px;padding:0;border:0;border-left:1px solid var(--line);border-radius:0 8px 8px 0;appearance:none;-webkit-appearance:none;background:transparent;color:transparent;cursor:pointer;font-size:16px}
+#category-picker option{color:var(--ink);background:var(--surface)}
+.category-picker-arrow{position:absolute;right:14px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none;color:var(--ink)}
+@media(max-width:767px){
+ .period-bar>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;width:100%;min-width:0}
+ .period-bar>div>label{grid-column:1/-1}
+ .period-bar #period{width:100%;min-width:0;max-width:100%;font-size:16px}
+ .period-bar #all-period{margin:0;white-space:nowrap;min-height:46px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink)}
+ #transactions-panel .filters{grid-template-columns:minmax(0,1fr);gap:16px}
+ #transactions-panel .filters>label{display:grid;gap:8px;grid-column:1;min-width:0;width:100%}
+ #transactions-panel .filters input,#transactions-panel .filters select{display:block;width:100%;min-width:0;max-width:100%;min-height:46px;font-size:16px}
+ #reset-filters{justify-self:start;margin:0;min-height:44px}
+}
