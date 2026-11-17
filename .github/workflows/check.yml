@@ -13,7 +13,7 @@ jobs:
       - run: npm test
       - run: npm install --no-save --ignore-scripts @electric-sql/pglite@0.5.11
       - run: node check-db.cjs
-      - run: npx playwright install --with-deps chrome
+      - run: npx playwright install --with-deps chrome webkit
       - run: npm run test:ui:all
       - uses: actions/upload-artifact@v4
         if: always()
